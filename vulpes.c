@@ -10,10 +10,12 @@
 #include <string.h>
 #include <unistd.h>
 #include <time.h>
+#include <sys/times.h>
 
 /* input files */
 static const char *WIFI_FILE  = "/proc/net/wireless";
 static const char *WIRD_FILE  = "/sys/class/net/enp2s0f0/operstate";
+static const char *CPU_FILE	  = "/proc/stat";
 static const char *CPU_TEMP	  = "/sys/bus/platform/devices/coretemp.0/temp1_input";
 static const char *AUD_FILE	  = "/proc/asound/card0/codec#0";
 static const char *BATT_NOW	  = "/sys/class/power_supply/BAT0/energy_now";
@@ -38,13 +40,17 @@ enum {
 };
 
 /* variables */
-static long	   ln1,ln2;
+static long	   ln1,ln2,ln3,ln4,j1,j2,j3,j4;
 static int	   n, t, loops = 0;
 static char	   c, stat, clk[60];
 static FILE	   *in;
 static time_t  current;
 
 int main(int argc, const char **argv) {
+   in = fopen(CPU_FILE,"r");
+   fscanf(in,"cpu %ld %ld %ld %ld",&j1,&j2,&j3,&j4);
+   fclose(in);
+
    /* main loop */
    for (;;) {
 	   
@@ -76,13 +82,20 @@ int main(int argc, const char **argv) {
 		   fscanf(in,"%d",&t);
 		   fclose(in);
 
-		   if (t > 86000) printf("{#%6X}{i %d}",COWARN,cpu);
+		   if (t > 88000) printf("{#%6X}{i %d}",COWARN,cpu);
 		   else printf("{#%06X}{i %d}",CONORM,cpu);
-		   /*
-		   if (n > 90) printf("{#%6X}|",COWARN);
-		   else if (n > 66) printf("{#%6X}i",COWARN);
-		   else if (n > 33) printf("{#%6X}:",COWARN);
-		   else printf("{#%6X}.",COWARN);*/
+		   printf("{#%06X}",COWARN);
+
+		   in = fopen(CPU_FILE,"r");
+		   fscanf(in,"cpu %ld %ld %ld %ld",&ln1,&ln2,&ln3,&ln4);
+		   fclose(in);
+
+		   n=(int)100*(ln1-j1+ln2-j2+ln3-j3)/(ln1-j1+ln2-j2+ln3-j3+ln4-j4);
+
+		   if (n > 90) printf("l");
+		   else if (n > 66) printf("i");
+		   else if (n > 33) printf(":");
+		   else printf(".");
 		   
 		   printf("{#%06X} | ",CONORM);
 	   }
