@@ -16,8 +16,8 @@ static const char *WIFI_FILE  = "/proc/net/wireless";
 static const char *WIRD_FILE  = "/sys/class/net/enp2s0f0/operstate";
 static const char *CPU_FILE	  = "/proc/stat";
 static const char *AUD_FILE	  = "/proc/asound/card0/codec#0";
-static const char *BATT_NOW	  = "/sys/class/power_supply/BAT0/charge_now";
-static const char *BATT_FULL  = "/sys/class/power_supply/BAT0/charge_full";
+static const char *BATT_NOW	  = "/sys/class/power_supply/BAT0/energy_now";
+static const char *BATT_FULL  = "/sys/class/power_supply/BAT0/energy_full";
 static const char *BATT_STAT  = "/sys/class/power_supply/BAT0/status";
 
 /* statis colors				  R G B */
@@ -30,16 +30,17 @@ static const long int COWARN  = 0xff8880;
 
 /* icons */
 enum {
-   wired_dcn, wired_cn, wifi_full, wifi_high, wifi_mid, wifi_low,
-   cpu, volume_high, volume_mid, volume_low, mute,
+   cpu, volume_high, volume_mid, volume_low, mute, 
+   wifi_full, wifi_high, wifi_mid, wifi_low, wired_dc, wired_cn, 
+   app_term, app_web, app_docs, app_music,app_video, app_games, app_images, app_etc, 
+   batt_fulc, batt_875c, batt_750c, batt_625c, batt_500c, batt_375c, batt_250c, batt_125c, batt_000c,
    batt_ful, batt_875, batt_750, batt_625, batt_500, batt_375, batt_250, batt_125, batt_000,
-   batt_fulc, batt_875c, batt_750c, batt_625c, batt_500c, batt_375c, batt_250c, batt_125c, batt_000c
 };
 
 /* variables */
 static long	   j1,j2,j3,j4,j5,j6,j7,j8,ln1,ln2,ln3,ln4,ln5,ln6,ln7,ln8;
 static int	   n, loops = 0;
-static char	   c, stat, clk[8], *aud_file;
+static char	   c, stat, clk[8];
 static FILE	   *in;
 static time_t  current;
 
@@ -53,10 +54,10 @@ int main(int argc, const char **argv) {
 	   
 	   /* Wired Iface Monitor */
 	   if ( (in=fopen(WIRD_FILE,"r")) ) {
-		   fscanf(in,"%s",&stat);
+		   fscanf(in,"%c",&stat);
 		   fclose(in);
 		   if (stat=='u') printf("{#%06X}{i %d}",COHIGH,wired_cn);
-		   else printf("{#%06X}{i %d}",CONORM,wired_dcn);
+		   else printf("{#%06X}{i %d}",CONORM,wired_dc);
 		   
 		   printf("{#%06X} | ",CONORM);
 	   }
@@ -93,20 +94,16 @@ int main(int argc, const char **argv) {
 			   fscanf(in,"%*[^\n]\n");
 		   while ( fscanf(in, "Amp-Out vals: [0x%x",&ln2) !=1 )
 			   fscanf(in,"%*[^\n]\n");
-		   while ( fscanf(in, "Node 0x14 [%c",&c) !=1 )
-			   fscanf(in,"%*[^\n]\n");
-		   while ( fscanf(in, "Amp-Out vals: [0x%x",&ln3) !=1 )
-			   fscanf(in,"%*[^\n]\n");
 		   fclose(in);
 		   
-		   if (ln3 != 0) printf("{#%06X}{i %d}",CONORM,mute);
+		   n = 10*ln2/ln1;
+		   if (n > 10) printf("{#%06X}{i %d}",CONORM,mute);
 		   else {
-			   n = 100*ln2/ln1;
-			   if (n > 90) printf("{#%06X}{i %d}",COWARN,volume_high);
-			   else if (n > 85) printf("{#%06X}{i %d}",CO_LOW,volume_high);
-			   else if (n > 65) printf("{#%06X}{i %d}",COMID1,volume_mid);
-			   else if (n > 35) printf("{#%06X}{i %d}",COMID2,volume_mid);
-			   else if (n < 35) printf("{#%06X}{i %d}",COHIGH,volume_low);
+			   if (n > 9) printf("{#%06X}{i %d}",COWARN,volume_high);
+			   else if (n > 7) printf("{#%06X}{i %d}",CO_LOW,volume_high);
+			   else if (n > 5) printf("{#%06X}{i %d}",COMID1,volume_mid);
+			   else if (n >= 3) printf("{#%06X}{i %d}",COMID2,volume_mid);
+			   else if (n < 3) printf("{#%06X}{i %d}",COHIGH,volume_low);
 		   }
 		   printf("{#%06X} | ",CONORM);
 	   }
