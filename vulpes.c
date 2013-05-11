@@ -130,7 +130,7 @@ int main(int argc, const char **argv) {
 				else printf("{#%06X}{i %d}",COWARN,batt_000c);
 			}
 			else {
-                if (n > 90) printf("{#%06X}{i %d}",COHIGH,batt_ful);
+				if (n > 90) printf("{#%06X}{i %d}",COHIGH,batt_ful);
 				else if (n >= 87.5) printf("{#%06X}{i %d}",COHIGH,batt_875);
 				else if (n >= 75) printf("{#%06X}{i %d}",COMID2,batt_750);
 				else if (n >= 62.5) printf("{#%06X}{i %d}",COMID2,batt_625);
@@ -140,7 +140,7 @@ int main(int argc, const char **argv) {
 				else if (n >= 12.5) printf("{#%06X}{i %d}",CO_LOW,batt_125);
 				else printf("{#%06X}{i %d}",COWARN,batt_000c);
 			}
-		printf("{#%06X} | ",CONORM);
+			printf("{#%06X} | ",CONORM);
 		}
 
 		/* Clock */
