@@ -40,7 +40,7 @@ enum {
 /* variables */
 static long	   j1,j2,j3,j4,j5,j6,j7,j8,ln1,ln2,ln3,ln4,ln5,ln6,ln7,ln8;
 static int	   n, loops = 0;
-static char	   c, stat, clk[8];
+static char	   c, stat, clk[60];
 static FILE	   *in;
 static time_t  current;
 
@@ -142,7 +142,7 @@ int main(int argc, const char **argv) {
 	   /* Clock */
 	   if ((loops % 40) == 0) {
 		   time(&current);
-		   strftime(clk,6,"%H.%M | %A, %d %B %Y",localtime(&current));
+		   strftime(clk,38,"%H.%M | %A, %d %B %Y",localtime(&current));
 	   }
 	   printf("{#%06X}%s \n",CONORM,clk);
 	   fflush(stdout);
