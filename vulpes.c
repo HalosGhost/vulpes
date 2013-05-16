@@ -83,7 +83,6 @@ int main(int argc, const char **argv) {
 
 		   if (t > 88000) printf("{#%6X}{i %d}",COWARN,cpu);
 		   else printf("{#%06X}{i %d}",CONORM,cpu);
-		   printf("{#%06X}",COWARN);
 
 		   in = fopen(CPU_FILE,"r");
 		   fscanf(in,"cpu %ld %ld %ld %ld",&ln1,&ln2,&ln3,&ln4);
@@ -92,10 +91,10 @@ int main(int argc, const char **argv) {
 		   if (ln4>j4) n=(int)100*(ln1-j1+ln2-j2+ln3-j3)/(ln1-j1+ln2-j2+ln3-j3+ln4-j4);
 		   else n=0;
 
-		   if (n > 90) printf("l");
-		   else if (n > 66) printf("i");
-		   else if (n > 33) printf(":");
-		   else printf(".");
+		   if (n > 90) printf("{#%06X}l",COWARN);
+		   else if (n > 66) printf("{#%06X}i",COMID2);
+		   else if (n > 33) printf("{#%06X}:",COMID1);
+		   else printf("{#%06X}.",CO_LOW);
 		   
 		   printf("{#%06X} | ",CONORM);
 	   }
