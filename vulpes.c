@@ -22,12 +22,12 @@ static const char *BATT_NOW	  = "/sys/class/power_supply/BAT0/capacity";
 static const char *BATT_STAT  = "/sys/class/power_supply/BAT0/status";
 
 /* statis colors				  R G B */
-static const long int CONORM  = 0xC6C6C6;
-static const long int CO_LOW  = 0xB7C9D6;
-static const long int COMID1  = 0x94AEC2;
-static const long int COMID2  = 0x7093AD;
-static const long int COHIGH  = 0x4C7899;
-static const long int COWARN  = 0xff8880;
+static const unsigned int CONORM  = 0xC6C6C6;
+static const unsigned int CO_LOW  = 0xB7C9D6;
+static const unsigned int COMID1  = 0x94AEC2;
+static const unsigned int COMID2  = 0x7093AD;
+static const unsigned int COHIGH  = 0x4C7899;
+static const unsigned int COWARN  = 0xff8880;
 
 /* icons */
 enum {
@@ -102,9 +102,9 @@ int main(int argc, const char **argv) {
 	   
 	   /* Volume Monitor */
 	   if ( (in=fopen(AUD_FILE,"r")) ) {
-		   while ( fscanf(in," Amp-Out caps: ofs=0x%x",&ln1) !=1 )
+		   while ( fscanf(in," Amp-Out caps: ofs=0x%ld",&ln1) !=1 )
 			   fscanf(in,"%*[^\n]\n");
-		   while ( fscanf(in, "Amp-Out vals: [0x%x",&ln2) !=1 )
+		   while ( fscanf(in, "Amp-Out vals: [0x%ld",&ln2) !=1 )
 			   fscanf(in,"%*[^\n]\n");
 		   fclose(in);
 		   
@@ -122,7 +122,7 @@ int main(int argc, const char **argv) {
 	   
 	   /* Battery Monitor */
 	   if ( (in=fopen(BATT_NOW,"r")) ) {
-		   fscanf(in,"%ld\n",&n); fclose(in);
+		   fscanf(in,"%d\n",&n); fclose(in);
 		   if ( (in=fopen(BATT_STAT,"r")) ) { fscanf(in,"%c",&c); fclose(in); }
 		   if (c=='C') {
 			   if (n >= 95) printf("{#%06X}{i %d}",COHIGH,batt_fulc);
