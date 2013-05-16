@@ -18,8 +18,7 @@ static const char *WIRD_FILE  = "/sys/class/net/enp2s0f0/operstate";
 static const char *CPU_FILE	  = "/proc/stat";
 static const char *CPU_TEMP	  = "/sys/bus/platform/devices/coretemp.0/temp1_input";
 static const char *AUD_FILE	  = "/proc/asound/card0/codec#0";
-static const char *BATT_NOW	  = "/sys/class/power_supply/BAT0/energy_now";
-static const char *BATT_FULL  = "/sys/class/power_supply/BAT0/energy_full";
+static const char *BATT_NOW	  = "/sys/class/power_supply/BAT0/capacity";
 static const char *BATT_STAT  = "/sys/class/power_supply/BAT0/status";
 
 /* statis colors				  R G B */
@@ -123,30 +122,28 @@ int main(int argc, const char **argv) {
 	   
 	   /* Battery Monitor */
 	   if ( (in=fopen(BATT_NOW,"r")) ) {
-		   fscanf(in,"%ld\n",&ln1); fclose(in);
-		   if ( (in=fopen(BATT_FULL,"r")) ) { fscanf(in,"%ld\n",&ln2); fclose(in); }
+		   fscanf(in,"%ld\n",&n); fclose(in);
 		   if ( (in=fopen(BATT_STAT,"r")) ) { fscanf(in,"%c",&c); fclose(in); }
-		   n = (ln1 ? ln1 * 100 / ln2 : 0);
 		   if (c=='C') {
-			   if (n > 90) printf("{#%06X}{i %d}",COHIGH,batt_fulc);
-			   else if (n >= 87.5) printf("{#%06X}{i %d}",COHIGH,batt_875c);
+			   if (n > 95) printf("{#%06X}{i %d}",COHIGH,batt_fulc);
+			   else if (n >= 88) printf("{#%06X}{i %d}",COHIGH,batt_875c);
 			   else if (n >= 75) printf("{#%06X}{i %d}",COMID2,batt_750c);
-			   else if (n >= 62.5) printf("{#%06X}{i %d}",COMID2,batt_625c);
+			   else if (n >= 63) printf("{#%06X}{i %d}",COMID2,batt_625c);
 			   else if (n >= 50) printf("{#%06X}{i %d}",COMID1,batt_500c);
-			   else if (n >= 37.5) printf("{#%06X}{i %d}",COMID1,batt_375c);
+			   else if (n >= 38) printf("{#%06X}{i %d}",COMID1,batt_375c);
 			   else if (n >= 25) printf("{#%06X}{i %d}",CO_LOW,batt_250c);
-			   else if (n >= 12.5) printf("{#%06X}{i %d}",CO_LOW,batt_125c);
+			   else if (n >= 13) printf("{#%06X}{i %d}",CO_LOW,batt_125c);
 			   else printf("{#%06X}{i %d}",COWARN,batt_000c);
 		   }
 		   else {
-			   if (n > 90) printf("{#%06X}{i %d}",COHIGH,batt_ful);
-			   else if (n >= 87.5) printf("{#%06X}{i %d}",COHIGH,batt_875);
+			   if (n > 95) printf("{#%06X}{i %d}",COHIGH,batt_ful);
+			   else if (n >= 87) printf("{#%06X}{i %d}",COHIGH,batt_875);
 			   else if (n >= 75) printf("{#%06X}{i %d}",COMID2,batt_750);
-			   else if (n >= 62.5) printf("{#%06X}{i %d}",COMID2,batt_625);
+			   else if (n >= 62) printf("{#%06X}{i %d}",COMID2,batt_625);
 			   else if (n >= 50) printf("{#%06X}{i %d}",COMID1,batt_500);
-			   else if (n >= 37.5) printf("{#%06X}{i %d}",COMID1,batt_375);
+			   else if (n >= 37) printf("{#%06X}{i %d}",COMID1,batt_375);
 			   else if (n >= 25) printf("{#%06X}{i %d}",CO_LOW,batt_250);
-			   else if (n >= 12.5) printf("{#%06X}{i %d}",CO_LOW,batt_125);
+			   else if (n >= 12) printf("{#%06X}{i %d}",CO_LOW,batt_125);
 			   else printf("{#%06X}{i %d}",COWARN,batt_000c);
 		   }
 		   printf("{#%06X} | ",CONORM);
