@@ -17,7 +17,6 @@ static const char *WIFI_FILE  = "/proc/net/wireless";
 static const char *WIRD_FILE  = "/sys/class/net/enp2s0f0/operstate";
 static const char *CPU_FILE	  = "/proc/stat";
 static const char *CPU_TEMP	  = "/sys/bus/platform/devices/coretemp.0/temp1_input";
-static const char *AUD_FILE	  = "/proc/asound/card0/codec#0";
 static const char *BATT_NOW	  = "/sys/class/power_supply/BAT0/capacity";
 static const char *BATT_STAT  = "/sys/class/power_supply/BAT0/status";
 
@@ -100,20 +99,14 @@ int main(int argc, const char **argv) {
 	   }
 	   
 	   /* Volume Monitor */
-	   if ( (in=fopen(AUD_FILE,"r")) ) {
-		   while ( fscanf(in," Amp-Out caps: ofs=0x%ld",&ln1) !=1 )
-			   fscanf(in,"%*[^\n]\n");
-		   while ( fscanf(in, "Amp-Out vals: [0x%ld",&ln2) !=1 )
-			   fscanf(in,"%*[^\n]\n");
-		   fclose(in);
-		   
-		   n = 10*ln2/ln1;
-		   if (n > 10) printf("{#%06X}{i %d}",CONORM,mute);
+	   if ( (in=popen("ponymix get-volume","r")) ) {
+		   fscanf(in,"%d",&n);
+		   if (system("ponymix is-muted")==0) printf("{#%06X}{i %d}",CONORM,mute);
 		   else {
-			   if (n >= 9) printf("{#%06X}{i %d}",COWARN,volume_high);
-			   else if (n >= 7) printf("{#%06X}{i %d}",CO_LOW,volume_high);
-			   else if (n >= 5) printf("{#%06X}{i %d}",COMID1,volume_mid);
-			   else if (n >= 3) printf("{#%06X}{i %d}",COMID2,volume_mid);
+			   if (n >= 85) printf("{#%06X}{i %d}",COWARN,volume_high);
+			   else if (n >= 75) printf("{#%06X}{i %d}",CO_LOW,volume_high);
+			   else if (n >= 50) printf("{#%06X}{i %d}",COMID1,volume_mid);
+			   else if (n >= 25) printf("{#%06X}{i %d}",COMID2,volume_mid);
 			   else printf("{#%06X}{i %d}",COHIGH,volume_low);
 		   }
 		   printf("{#%06X} | ",CONORM);
