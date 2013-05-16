@@ -101,6 +101,7 @@ int main(int argc, const char **argv) {
 	   /* Volume Monitor */
 	   if ( (in=popen("ponymix get-volume","r")) ) {
 		   fscanf(in,"%d",&n);
+		   fclose(in);
 		   if (system("ponymix is-muted")==0) printf("{#%06X}{i %d}",CONORM,mute);
 		   else {
 			   if (n >= 85) printf("{#%06X}{i %d}",COWARN,volume_high);
