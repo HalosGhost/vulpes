@@ -111,11 +111,11 @@ int main(int argc, const char **argv) {
 		   n = 10*ln2/ln1;
 		   if (n > 10) printf("{#%06X}{i %d}",CONORM,mute);
 		   else {
-			   if (n > 9) printf("{#%06X}{i %d}",COWARN,volume_high);
-			   else if (n > 7) printf("{#%06X}{i %d}",CO_LOW,volume_high);
-			   else if (n > 5) printf("{#%06X}{i %d}",COMID1,volume_mid);
+			   if (n >= 9) printf("{#%06X}{i %d}",COWARN,volume_high);
+			   else if (n >= 7) printf("{#%06X}{i %d}",CO_LOW,volume_high);
+			   else if (n >= 5) printf("{#%06X}{i %d}",COMID1,volume_mid);
 			   else if (n >= 3) printf("{#%06X}{i %d}",COMID2,volume_mid);
-			   else if (n < 3) printf("{#%06X}{i %d}",COHIGH,volume_low);
+			   else printf("{#%06X}{i %d}",COHIGH,volume_low);
 		   }
 		   printf("{#%06X} | ",CONORM);
 	   }
@@ -125,7 +125,7 @@ int main(int argc, const char **argv) {
 		   fscanf(in,"%ld\n",&n); fclose(in);
 		   if ( (in=fopen(BATT_STAT,"r")) ) { fscanf(in,"%c",&c); fclose(in); }
 		   if (c=='C') {
-			   if (n > 95) printf("{#%06X}{i %d}",COHIGH,batt_fulc);
+			   if (n >= 95) printf("{#%06X}{i %d}",COHIGH,batt_fulc);
 			   else if (n >= 88) printf("{#%06X}{i %d}",COHIGH,batt_875c);
 			   else if (n >= 75) printf("{#%06X}{i %d}",COMID2,batt_750c);
 			   else if (n >= 63) printf("{#%06X}{i %d}",COMID2,batt_625c);
@@ -136,7 +136,7 @@ int main(int argc, const char **argv) {
 			   else printf("{#%06X}{i %d}",COWARN,batt_000c);
 		   }
 		   else {
-			   if (n > 95) printf("{#%06X}{i %d}",COHIGH,batt_ful);
+			   if (n >= 95) printf("{#%06X}{i %d}",COHIGH,batt_ful);
 			   else if (n >= 87) printf("{#%06X}{i %d}",COHIGH,batt_875);
 			   else if (n >= 75) printf("{#%06X}{i %d}",COMID2,batt_750);
 			   else if (n >= 62) printf("{#%06X}{i %d}",COMID2,batt_625);
@@ -144,7 +144,7 @@ int main(int argc, const char **argv) {
 			   else if (n >= 37) printf("{#%06X}{i %d}",COMID1,batt_375);
 			   else if (n >= 25) printf("{#%06X}{i %d}",CO_LOW,batt_250);
 			   else if (n >= 12) printf("{#%06X}{i %d}",CO_LOW,batt_125);
-			   else printf("{#%06X}{i %d}",COWARN,batt_000c);
+			   else printf("{#%06X}{i %d}",COWARN,batt_000);
 		   }
 		   printf("{#%06X} | ",CONORM);
 	   }
