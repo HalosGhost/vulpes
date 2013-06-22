@@ -66,11 +66,16 @@ int main(int argc, const char **argv) {
 	   if ( (in=fopen(WIFI_FILE,"r")) ) {
 		   fscanf(in,"%*[^\n]\n%*[^\n]\n wlp3s0: %*d %d.",&n);
 		   fclose(in);
-		   if (n > 70) printf("{#%06X}W",COWARN);
-		   else if (n > 63) printf("{#%06X}{i %d}",COHIGH,wifi_full);
+		   
+		   in=popen("grep wlp3s0 /proc/net/wireless","r");
+		   t=pclose(in);
+
+		   if (t==256) n=0;
+
+		   if (n > 63) printf("{#%06X}{i %d}",COHIGH,wifi_full);
 		   else if (n > 50) printf("{#%06X}{i %d}",COMID2,wifi_high);
 		   else if (n > 38) printf("{#%06X}{i %d}",COMID1,wifi_mid);
-		   else if (n < 38) printf("{#%06X}{i %d}",CO_LOW,wifi_low);
+		   else if (n > 1) printf("{#%06X}{i %d}",CO_LOW,wifi_low);
 		   else printf("{#%06X}W",CONORM);
 		   
 		   printf("{#%06X} | ",CONORM);
