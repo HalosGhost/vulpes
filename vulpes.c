@@ -64,13 +64,9 @@ int main(int argc, const char **argv) {
 	   
 	   /* Wireless Iface Monitor */
 	   if ( (in=fopen(WIFI_FILE,"r")) ) {
+		   n=0;
 		   fscanf(in,"%*[^\n]\n%*[^\n]\n wlp3s0: %*d %d.",&n);
 		   fclose(in);
-		   
-		   in=popen("grep wlp3s0 /proc/net/wireless","r");
-		   t=pclose(in);
-
-		   if (t==256) n=0;
 
 		   if (n > 63) printf("{#%06X}{i %d}",COHIGH,wifi_full);
 		   else if (n > 50) printf("{#%06X}{i %d}",COMID2,wifi_high);
