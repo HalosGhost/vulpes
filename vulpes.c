@@ -70,7 +70,7 @@ int main(int argc, const char **argv) {
 		   fscanf(in,"%*[^\n]\n%*[^\n]\n wlp3s0: %*d %d.",&n);
 		   fclose(in);
 
-		   t=1800;
+		   t=0;
 		   if (loops % t) {
 			   if (system("curl -s http://icanhazip.com > /dev/null")==0) {
 				   printf("{#%06X}",COHIGH);
