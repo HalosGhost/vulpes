@@ -51,13 +51,15 @@ int main(int argc, const char **argv) {
 
    /* main loop */
    for (;;) {
+
+	   printf("{#%06X}",CONORM); // Set default color
 	   
 	   /* Wired Iface Monitor */
 	   if ( (in=fopen(WIRD_FILE,"r")) ) {
 		   fscanf(in,"%c",&stat);
 		   fclose(in);
 		   if (stat=='u') printf("{#%06X}{i %d}",COHIGH,wired_cn);
-		   else printf("{#%06X}{i %d}",CONORM,wired_dc);
+		   else printf("{i %d}",wired_dc);
 		   
 		   printf("{#%06X} | ",CONORM);
 	   }
@@ -68,11 +70,20 @@ int main(int argc, const char **argv) {
 		   fscanf(in,"%*[^\n]\n%*[^\n]\n wlp3s0: %*d %d.",&n);
 		   fclose(in);
 
-		   if (n > 63) printf("{#%06X}{i %d}",COHIGH,wifi_full);
-		   else if (n > 50) printf("{#%06X}{i %d}",COMID2,wifi_high);
-		   else if (n > 38) printf("{#%06X}{i %d}",COMID1,wifi_mid);
-		   else if (n > 1) printf("{#%06X}{i %d}",CO_LOW,wifi_low);
-		   else printf("{#%06X}W",CONORM);
+		   t=1800;
+		   if (loops % t) {
+			   if (system("curl -s http://icanhazip.com > /dev/null")==0) {
+				   printf("{#%06X}",COHIGH);
+				   t=1800;
+			   }
+			   else t=60;
+		   }
+
+		   if (n > 63) printf("{i %d}",wifi_full);
+		   else if (n > 50) printf("{i %d}",wifi_high);
+		   else if (n > 38) printf("{i %d}",wifi_mid);
+		   else if (n > 1) printf("{i %d}",wifi_low);
+		   else printf("W");
 		   
 		   printf("{#%06X} | ",CONORM);
 	   }
@@ -82,7 +93,7 @@ int main(int argc, const char **argv) {
 		   fscanf(in,"%d",&t);
 		   fclose(in);
 
-		   if (t > 88000) printf("{#%6X}{i %d}",COWARN,cpu);
+		   if (t > 88000) printf("{#%06X}{i %d}",COWARN,cpu);
 		   else printf("{#%06X}{i %d}",CONORM,cpu);
 
 		   in = fopen(CPU_FILE,"r");
