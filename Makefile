@@ -1,7 +1,7 @@
-CFLAGS	+=	-Os -Wall
-PROG	=	vulpes
-PREFIX	?=	/usr
-VER		=	1.0
+CFLAGS  +=  -Os -Wall
+PROG    =   vulpes
+PREFIX  ?=  /usr
+VER     =   1.0
 
 ${PROG}: ${PROG}.c
 	@${CC} ${CFLAGS} -o ${PROG} ${PROG}.c
