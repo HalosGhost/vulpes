@@ -44,20 +44,25 @@ static char	   c, stat, clk[60];
 static FILE	   *in;
 static time_t  current;
 
-int main(int argc, const char **argv) {
+void usage(char *progname) {
+	fprintf(stderr,"Usage: %s [-h|--help]\n", progname);
+	exit(44);
+}
+
+int main(int argc, char** argv) {
    in = fopen(CPU_FILE,"r");
    fscanf(in,"cpu %ld %ld %ld %ld",&j1,&j2,&j3,&j4);
    fclose(in);
 
    /* main loop */
+   if (argv[1]) usage(argv[0]);
    for (;;) {
 
 	   printf("{#%06X}",CONORM); // Set default color
 	   
 	   /* Wired Iface Monitor */
 	   if ( (in=fopen(WIRD_FILE,"r")) ) {
-		   fscanf(in,"%c",&stat);
-		   fclose(in);
+		   fscanf(in,"%c",&stat); fclose(in);
 		   if (stat=='u') printf("{#%06X}{i %d}",COHIGH,wired_cn);
 		   else printf("{i %d}",wired_dc);
 		   
@@ -67,15 +72,11 @@ int main(int argc, const char **argv) {
 	   /* Wireless Iface Monitor */
 	   if ( (in=fopen(WIFI_FILE,"r")) ) {
 		   n=0;
-		   fscanf(in,"%*[^\n]\n%*[^\n]\n wlp3s0: %*d %d.",&n);
-		   fclose(in);
+		   fscanf(in,"%*[^\n]\n%*[^\n]\n wlp3s0: %*d %d.",&n); fclose(in);
 
 		   t=15;
-		   if ((loops%t)==0) {
-			   if (system("curl -s http://icanhazip.com > /dev/null")==0) {
-				   printf("{#%06X}",COHIGH);
-				   t=1800;
-			   }
+		   if ( (loops % t)==0 ) {
+			   if (system("curl -s http://icanhazip.com > /dev/null")==0) { printf("{#%06X}",COHIGH); t=600; }
 			   else t=60;
 		   }
 
@@ -90,15 +91,13 @@ int main(int argc, const char **argv) {
 	   
 	   /* CPU Monitor */
 	   if ( (in=fopen(CPU_TEMP,"r")) ) {
-		   fscanf(in,"%d",&t);
-		   fclose(in);
+		   fscanf(in,"%d",&t); fclose(in);
 
 		   if (t > 88000) printf("{#%06X}{i %d}",COWARN,cpu);
 		   else printf("{#%06X}{i %d}",CONORM,cpu);
 
 		   in = fopen(CPU_FILE,"r");
-		   fscanf(in,"cpu %ld %ld %ld %ld",&ln1,&ln2,&ln3,&ln4);
-		   fclose(in);
+		   fscanf(in,"cpu %ld %ld %ld %ld",&ln1,&ln2,&ln3,&ln4); fclose(in);
 
 		   if (ln4>j4) n=(int)100*(ln1-j1+ln2-j2+ln3-j3)/(ln1-j1+ln2-j2+ln3-j3+ln4-j4);
 		   else n=0;
@@ -113,9 +112,8 @@ int main(int argc, const char **argv) {
 	   
 	   /* Volume Monitor */
 	   if ( (in=popen("ponymix get-volume","r")) ) {
-		   fscanf(in,"%d",&n);
-		   fclose(in);
-		   if (system("ponymix is-muted")==0) printf("{#%06X}{i %d}",CONORM,mute);
+		   fscanf(in,"%d",&n); fclose(in);
+		   if (system("ponymix is-muted")==0) printf("{i %d}",mute);
 		   else {
 			   if (n >= 85) printf("{#%06X}{i %d}",COWARN,volume_high);
 			   else if (n >= 75) printf("{#%06X}{i %d}",CO_LOW,volume_high);
@@ -159,8 +157,8 @@ int main(int argc, const char **argv) {
 	   if ((loops % 40) == 0) {
 		   time(&current);
 		   strftime(clk,38,"%H.%M | %A, %d %B %Y",localtime(&current));
+		   printf("%s \n",clk);
 	   }
-	   printf("{#%06X}%s \n",CONORM,clk);
 	   fflush(stdout);
 	   sleep(1);
    }
