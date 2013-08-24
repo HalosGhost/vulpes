@@ -63,7 +63,7 @@ int main(int argc, char** argv) {
 	   printf("{#%06X}",CONORM);
 
 	   /* Weather Update */
-	   if ( (wthrloops % 300)==0) {
+	   /*if ( (wthrloops % 300)==0) {
 		   if ( (in=popen("shaman -c 55105","r")) ) {
 			   fscanf(in,"Condition: %s",condition);pclose(in);
 			   if ( strstr(condition,"Overcast") ) printf("{i %d}",overcast);
@@ -82,7 +82,8 @@ int main(int argc, char** argv) {
 			   else printf("{i %d}",sunny);
 			   printf(" | ");
 		   }
-	   }
+	   }*/
+
 	   /* Wired Iface Monitor */
 	   if ( (in=fopen(WIRD_FILE,"r")) ) {
 		   fscanf(in,"%c",&stat); fclose(in);
