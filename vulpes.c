@@ -35,12 +35,13 @@ enum {
    app_term, app_web, app_docs, app_music,app_video, app_games, app_images, app_etc, 
    batt_fulc, batt_875c, batt_750c, batt_625c, batt_500c, batt_375c, batt_250c, batt_125c, batt_000c,
    batt_ful, batt_875, batt_750, batt_625, batt_500, batt_375, batt_250, batt_125, batt_000,
+   sunny, partly_sunny, overcast, partly_cloudy, rain, thunderstorms, snow, misty,
 };
 
 /* variables */
 static long	   ln1,ln2,ln3,ln4,j1,j2,j3,j4;
-static int	   n, t, loops = 0;
-static char	   c, stat, clk[60];
+static int	   n, t, wthrloops, loops = 0;
+static char	   c, stat, clk[60], condition[60];
 static FILE	   *in;
 static time_t  current;
 
@@ -58,8 +59,27 @@ int main(int argc, char** argv) {
    if (argv[1]) usage(argv[0]);
    for (;;) {
 
-	   printf("{#%06X}",CONORM); // Set default color
-	   
+	   /* Weather Update */
+	   if ( (wthrloops % 300)==0) {
+		   if ( (in=popen("shaman -c 55105","r")) ) {
+			   fscanf(in,"Condition: %s",condition);pclose(in);
+			   if ( strstr(condition,"Overcast") ) printf("{i %d}",overcast);
+			   else if ( strstr(condition,"Partly") ) {
+				   if ( strstr(condition,"Cloudy") ) printf("{i %d}",partly_cloudy);
+				   else if ( strstr(condition,"Sunny") ) printf("{i %d}",partly_sunny);
+				   else printf("{i %d}",sunny);
+			   }
+			   else if ( strstr(condition,"Mostly") ) {
+				   if ( strstr(condition,"Cloudy") ) printf("{i %d}",partly_cloudy);
+				   else if ( strstr(condition,"Sunny") ) printf("{i %d}",partly_sunny);
+				   else printf("{i %d}",sunny);
+			   }
+			   else if ( strstr(condition,"Thunderstorms") ) printf("{i %d}",thunderstorms);
+			   else if ( strstr(condition,"Showers") ) printf("{i %d}",rain);
+			   else printf("{i %d}",sunny);
+			   printf(" | ");
+		   }
+	   }
 	   /* Wired Iface Monitor */
 	   if ( (in=fopen(WIRD_FILE,"r")) ) {
 		   fscanf(in,"%c",&stat); fclose(in);
@@ -112,7 +132,7 @@ int main(int argc, char** argv) {
 	   
 	   /* Volume Monitor */
 	   if ( (in=popen("ponymix get-volume","r")) ) {
-		   fscanf(in,"%d",&n); fclose(in);
+		   fscanf(in,"%d",&n); pclose(in);
 		   if (system("ponymix is-muted")==0) printf("{i %d}",mute);
 		   else {
 			   if (n >= 85) printf("{#%06X}{i %d}",COWARN,volume_high);
