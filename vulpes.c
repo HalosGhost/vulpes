@@ -59,6 +59,9 @@ int main(int argc, char** argv) {
    if (argv[1]) usage(argv[0]);
    for (;;) {
 
+	   // Set Default Color
+	   printf("{#%06X}",CONORM);
+
 	   /* Weather Update */
 	   if ( (wthrloops % 300)==0) {
 		   if ( (in=popen("shaman -c 55105","r")) ) {
