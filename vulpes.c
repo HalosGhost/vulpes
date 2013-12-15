@@ -199,5 +199,8 @@ int main(int argc, char** argv) {
 	   fflush(stdout);
 	   sleep(1);
    }
+   fclose(suppressOutput);
+   curl_easy_cleanup(handle);
+   curl_global_cleanup();
    return 0;
 }
