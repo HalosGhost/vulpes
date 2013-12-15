@@ -60,6 +60,7 @@ int main(int argc, char** argv) {
 
    curl_easy_setopt(handle, CURLOPT_WRITEDATA, suppressOutput);
    curl_easy_setopt(handle, CURLOPT_URL, "http://icanhazip.com");
+   curl_easy_setopt(handle, CURLOPT_TIMEOUT, 5);
 
    in = fopen(CPU_FILE,"r");
    fscanf(in,"cpu %ld %ld %ld %ld",&j1,&j2,&j3,&j4);
@@ -110,11 +111,14 @@ int main(int argc, char** argv) {
 
 		   t=15;
 		   if ( (loops % t)==0 ) {
-			   res = curl_easy_perform(handle);
-			   if ( res == CURLE_OK ) {
-				   printf("{#%06X}",COHIGH);
-				   t=600;
+			   if ( handle ) {
+				   res = curl_easy_perform(handle);
+				   if ( res == CURLE_OK ) {
+					   printf("{#%06X}",COHIGH);
+					   t=600;
+				   }
 			   }
+			   else t=60;
 		   }
 
 		   if (n > 63) printf("{i %d}",wifi_full);
