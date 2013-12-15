@@ -2,9 +2,10 @@ CFLAGS  +=  -Os -Wall
 PROG    =   vulpes
 PREFIX  ?=  /usr
 VER     =   1.0
+LIBS	  =	-lcurl
 
 ${PROG}: ${PROG}.c
-	@${CC} ${CFLAGS} -o ${PROG} ${PROG}.c
+	@${CC} ${CFLAGS} ${LIBS} -o ${PROG} ${PROG}.c
 	@strip ${PROG}
 
 clean:

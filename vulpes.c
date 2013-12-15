@@ -11,6 +11,7 @@
 #include <unistd.h>
 #include <time.h>
 #include <sys/times.h>
+#include <curl/curl.h>
 
 /* input files */
 static const char *WIFI_FILE  = "/proc/net/wireless";
@@ -51,6 +52,15 @@ void usage(char *progname) {
 }
 
 int main(int argc, char** argv) {
+   CURL *handle;
+   CURLcode res;
+   curl_global_init(CURL_GLOBAL_ALL);
+   handle = curl_easy_init();
+   FILE *suppressOutput = fopen("/dev/null", "wb");
+
+   curl_easy_setopt(handle, CURLOPT_WRITEDATA, suppressOutput);
+   curl_easy_setopt(handle, CURLOPT_URL, "http://icanhazip.com");
+
    in = fopen(CPU_FILE,"r");
    fscanf(in,"cpu %ld %ld %ld %ld",&j1,&j2,&j3,&j4);
    fclose(in);
@@ -100,8 +110,11 @@ int main(int argc, char** argv) {
 
 		   t=15;
 		   if ( (loops % t)==0 ) {
-			   if (system("curl -s http://icanhazip.com > /dev/null")==0) { printf("{#%06X}",COHIGH); t=600; }
-			   else t=60;
+			   res = curl_easy_perform(handle);
+			   if ( res == CURLE_OK ) {
+				   printf("{#%06X}",COHIGH);
+				   t=600;
+			   }
 		   }
 
 		   if (n > 63) printf("{i %d}",wifi_full);
